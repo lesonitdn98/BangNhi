@@ -1,0 +1,36 @@
+version: "3.1"
+services:
+    juristore:
+        build: .
+        ports: 
+            - "80:80"
+        volumes:
+            - ./juristore:/var/www/html/
+        links:
+            - juri-db
+        networks:
+            - default
+    juri-db:
+        image: mysql
+        ports: 
+            - "3306:3306"
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_DATABASE: juristore
+            MYSQL_USER: bangnhi
+            MYSQL_PASSWORD: sunflower909
+            MYSQL_ROOT_PASSWORD: sunflower909 
+        volumes:
+            - ./data:/var/lib/mysql
+        networks:
+            - default
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links: 
+            - juri-db:db
+        ports:
+            - 8000:80
+        environment:
+            MYSQL_USER: bangnhi
+            MYSQL_PASSWORD: sunflower909
+            MYSQL_ROOT_PASSWORD: sunflower909
