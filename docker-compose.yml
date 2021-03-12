@@ -1,36 +1,28 @@
-version: "3.1"
+version: "3.9"
+    
 services:
-    juristore:
-        build: .
-        ports: 
-            - "80:80"
-        volumes:
-            - ./juristore:/var/www/html/
-        links:
-            - juri-db
-        networks:
-            - default
-    juri-db:
-        image: mysql
-        ports: 
-            - "3306:3306"
-        command: --default-authentication-plugin=mysql_native_password
-        environment:
-            MYSQL_DATABASE: juristore
-            MYSQL_USER: bangnhi
-            MYSQL_PASSWORD: sunflower909
-            MYSQL_ROOT_PASSWORD: sunflower909 
-        volumes:
-            - ./data:/var/lib/mysql
-        networks:
-            - default
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        links: 
-            - juri-db:db
-        ports:
-            - 8000:80
-        environment:
-            MYSQL_USER: bangnhi
-            MYSQL_PASSWORD: sunflower909
-            MYSQL_ROOT_PASSWORD: sunflower909
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: sunflower909
+      MYSQL_DATABASE: juristore
+      MYSQL_USER: bangnhi
+      MYSQL_PASSWORD: sunflower909
+    
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - "80:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: bangnhi
+      WORDPRESS_DB_PASSWORD: sunflower909
+      WORDPRESS_DB_NAME: juristore
+volumes:
+  db_data: {}
